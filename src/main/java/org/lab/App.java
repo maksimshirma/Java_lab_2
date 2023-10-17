@@ -24,7 +24,6 @@ public class App {
 
             if (isValid) {
                 System.out.print(calc.calculate());
-//                System.out.print(expression + " = " + calc.calculate());
             } else {
                 System.out.println("Выражение некорректное.");
             }
