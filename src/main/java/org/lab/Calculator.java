@@ -243,4 +243,23 @@ public class Calculator {
         }
         return stack.isEmpty();
     }
+
+    @Override
+    public String toString() {
+        return this.expression;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+
+        Calculator calc = (Calculator) o;
+
+        return Objects.equals(calc.expression, this.expression);
+    }
 }
