@@ -23,7 +23,7 @@ public class App {
             isValid = calc.enterExpression(expression);
 
             if (isValid) {
-                System.out.print(calc.calculate());
+                System.out.println(expression + " = " + calc.calculate());
             } else {
                 System.out.println("Выражение некорректное.");
             }

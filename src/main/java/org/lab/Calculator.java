@@ -1,5 +1,6 @@
 package org.lab;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -9,7 +10,13 @@ import java.util.Stack;
 public class Calculator {
     private String expression;
 
-    Calculator() {}
+    private final ArrayList<String> operands;
+
+    private int lastIndex = -1;
+
+    Calculator() {
+        this.operands = new ArrayList<>();
+    }
 
     public boolean enterExpression(String _expression) {
         String currentExpression = _expression.replaceAll(" ", "");
@@ -23,7 +30,52 @@ public class Calculator {
 
     public String calculate() {
         convertExpressionToPostfix();
+        calculatePostfixExpression();
         return this.expression;
+    }
+
+    private void calculatePostfixExpression() {
+        Stack<Double> stack = new Stack<>();
+        StringBuilder result = new StringBuilder();
+        final int length = expression.length();
+        for (int index = 0; index < length; index++) {
+            char currentCharacter = expression.charAt(index);
+            if (currentCharacter >= '0' && currentCharacter <= '9') {
+                final String value = this.operands.get(Character.getNumericValue(currentCharacter));
+                stack.push(Double.parseDouble(value));
+            } else {
+                final Double secondOperand = stack.peek();
+                stack.pop();
+                final Double firstOperand = stack.peek();
+                stack.pop();
+                switch (currentCharacter) {
+                    case '+': {
+                        final Double temp = firstOperand + secondOperand;
+                        stack.push(temp);
+                        break;
+                    }
+                    case '-': {
+                        final Double temp = firstOperand - secondOperand;
+                        stack.push(temp);
+                        break;
+                    }
+                    case '*': {
+                        final Double temp = firstOperand * secondOperand;
+                        stack.push(temp);
+                        break;
+                    }
+                    case '/': {
+                        final Double temp = firstOperand / secondOperand;
+                        stack.push(temp);
+                        break;
+                    }
+                }
+            }
+        }
+        this.expression = stack.peek().toString();
+        this.operands.clear();
+        this.lastIndex = -1;
+
     }
 
     private int getPriority(char operator) {
@@ -62,6 +114,7 @@ public class Calculator {
     private void convertExpressionToPostfix() {
         Stack<Character> stack = new Stack<>();
         StringBuilder postfixExpression = new StringBuilder();
+        StringBuilder operand = new StringBuilder();
         final int length = expression.length();
         for (int index = 0; index < length; index++) {
             char currentCharacter = expression.charAt(index);
@@ -71,6 +124,11 @@ public class Calculator {
                     break;
                 }
                 case '+': case '-': case '*': case '/': {
+                    if (!operand.isEmpty()) {
+                        this.operands.add(operand.toString());
+                        postfixExpression.append(++this.lastIndex);
+                        operand = new StringBuilder();
+                    }
                     boolean isPushed = false;
                     do {
                         if (stack.isEmpty()) {
@@ -90,16 +148,21 @@ public class Calculator {
                     break;
                 }
                 case ')': case '}': case ']': {
+                    this.operands.add(operand.toString());
+                    postfixExpression.append(++this.lastIndex);
+                    operand = new StringBuilder();
                     clearStackBeforeOpenBracket(stack, postfixExpression, currentCharacter);
                     break;
                 }
                 default: {
                     if (currentCharacter >= '0' && currentCharacter <= '9') {
-                        postfixExpression.append(currentCharacter);
+                        operand.append(currentCharacter);
                     }
                 }
             }
         }
+        this.operands.add(operand.toString());
+        postfixExpression.append(++this.lastIndex);
         while (!stack.isEmpty()) {
             char currentCharacter = stack.peek();
             postfixExpression.append(currentCharacter);
