@@ -3,6 +3,9 @@ package org.lab;
 import java.util.Objects;
 import java.util.Scanner;
 
+/**
+ * The main class
+ */
 public class App {
     /**
      * The main method.
